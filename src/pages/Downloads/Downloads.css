@@ -1,0 +1,71 @@
+.downloads {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.downloads-header {
+  text-align: center;
+}
+
+.downloads-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.downloads-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.activity-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+}
+
+.activity-card-icon {
+  font-size: 1.3rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.activity-card-info {
+  min-width: 0;
+}
+
+.activity-card-text {
+  font-size: 0.9rem;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.activity-card-time {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+  display: inline-block;
+}
+
+@media (max-width: 425px) {
+  .downloads-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
