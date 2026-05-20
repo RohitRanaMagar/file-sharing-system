@@ -1,0 +1,28 @@
+.contact-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.contact-container {
+  padding: 2rem;
+  width: min(550px, 100%);
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.contact-submit {
+  width: 100%;
+  padding: 0.85rem;
+  font-size: 1rem;
+}
+
+@media (max-width: 425px) {
+  .contact-container {
+    padding: 1.25rem;
+  }
+}
