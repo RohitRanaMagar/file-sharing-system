@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react'
-import { generateId } from '../data/fileStorage'
+import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import client from '../api/client'
 
 const AuthContext = createContext(null)
 
@@ -9,66 +9,57 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    const token = localStorage.getItem('easyshare_token')
     const stored = localStorage.getItem('easyshare_user')
-    if (stored) {
+    if (token && stored) {
       try {
-        const parsed = JSON.parse(stored)
-        setUser(parsed)
+        setUser(JSON.parse(stored))
         setIsAuthenticated(true)
       } catch { }
     }
     setLoading(false)
   }, [])
 
-  const login = (email, password) => {
-    const users = JSON.parse(localStorage.getItem('easyshare_users') || '[]')
-    const found = users.find(u => u.email === email && u.password === password)
-    if (!found) return { success: false, message: 'Invalid email or password' }
-
-    const { password: _, ...safe } = found
-    const userData = { ...safe, lastLogin: new Date().toLocaleString() }
-    setUser(userData)
-    setIsAuthenticated(true)
-    localStorage.setItem('easyshare_user', JSON.stringify(userData))
-    return { success: true }
+  const login = async (email, password) => {
+    try {
+      const { data } = await client.post('/auth/login', { email, password })
+      localStorage.setItem('easyshare_token', data.token)
+      localStorage.setItem('easyshare_user', JSON.stringify(data.user))
+      setUser(data.user)
+      setIsAuthenticated(true)
+      return { success: true }
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Login failed'
+      return { success: false, message: msg }
+    }
   }
 
-  const register = (name, email, password) => {
-    const users = JSON.parse(localStorage.getItem('easyshare_users') || '[]')
-    if (users.find(u => u.email === email)) {
-      return { success: false, message: 'Email already registered' }
+  const register = async (name, email, password) => {
+    try {
+      await client.post('/auth/register', { name, email, password })
+      return { success: true }
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Registration failed'
+      return { success: false, message: msg }
     }
-    const newUser = {
-      id: generateId(),
-      name,
-      email,
-      password,
-      course: '',
-      college: '',
-      semester: '',
-      supervisor: '',
-      lastLogin: null,
-    }
-    users.push(newUser)
-    localStorage.setItem('easyshare_users', JSON.stringify(users))
-    return { success: true }
   }
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setUser(null)
     setIsAuthenticated(false)
+    localStorage.removeItem('easyshare_token')
     localStorage.removeItem('easyshare_user')
-  }
+  }, [])
 
-  const updateProfile = (data) => {
-    const updated = { ...user, ...data }
-    setUser(updated)
-    localStorage.setItem('easyshare_user', JSON.stringify(updated))
-    const users = JSON.parse(localStorage.getItem('easyshare_users') || '[]')
-    const idx = users.findIndex(u => u.id === user.id)
-    if (idx !== -1) {
-      users[idx] = { ...users[idx], ...data }
-      localStorage.setItem('easyshare_users', JSON.stringify(users))
+  const updateProfile = async (data) => {
+    try {
+      const { data: res } = await client.put('/auth/profile', data)
+      setUser(res.user)
+      localStorage.setItem('easyshare_user', JSON.stringify(res.user))
+      return { success: true }
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Update failed'
+      return { success: false, message: msg }
     }
   }
 

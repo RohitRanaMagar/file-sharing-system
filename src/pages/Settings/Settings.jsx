@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
-import { useAuth } from '../../context/AuthContext'
+import client from '../../api/client'
 import './Settings.css'
 
 export default function Settings() {
-  const { user, updateProfile } = useAuth()
+  const user = JSON.parse(localStorage.getItem('easyshare_user') || 'null')
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('easyshare_theme') === 'dark')
   const [notifications, setNotifications] = useState(() => localStorage.getItem('easyshare_notifications') !== 'false')
 
@@ -25,7 +25,7 @@ export default function Settings() {
     })
   }
 
-  const handlePasswordChange = (e) => {
+  const handlePasswordChange = async (e) => {
     e.preventDefault()
     setPassError('')
     setPassSuccess('')
@@ -43,17 +43,16 @@ export default function Settings() {
       return
     }
 
-    const users = JSON.parse(localStorage.getItem('easyshare_users') || '[]')
-    const idx = users.findIndex(u => u.id === user?.id)
-    if (idx === -1 || users[idx].password !== passForm.current) {
-      setPassError('Current password is incorrect')
-      return
+    try {
+      await client.put('/auth/password', {
+        currentPassword: passForm.current,
+        newPassword: passForm.newPassword,
+      })
+      setPassSuccess('Password changed successfully!')
+      setPassForm({ current: '', newPassword: '', confirm: '' })
+    } catch (err) {
+      setPassError(err.response?.data?.message || 'Failed to change password')
     }
-
-    users[idx].password = passForm.newPassword
-    localStorage.setItem('easyshare_users', JSON.stringify(users))
-    setPassSuccess('Password changed successfully!')
-    setPassForm({ current: '', newPassword: '', confirm: '' })
   }
 
   return (

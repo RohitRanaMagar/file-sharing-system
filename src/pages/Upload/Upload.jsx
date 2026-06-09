@@ -1,5 +1,5 @@
-﻿import { useState, useRef } from 'react'
-import { saveFile, addActivity, generateId } from '../../data/fileStorage'
+﻿import { useState, useRef, useEffect } from 'react'
+import client from '../../api/client'
 import './Upload.css'
 
 export default function Upload() {
@@ -9,12 +9,18 @@ export default function Upload() {
   const [uploaded, setUploaded] = useState(false)
   const [dragOver, setDragOver] = useState(false)
   const [error, setError] = useState('')
+  const [folders, setFolders] = useState([])
+  const [selectedFolder, setSelectedFolder] = useState('')
   const inputRef = useRef(null)
+
+  useEffect(() => {
+    client.get('/folders').then(({ data }) => setFolders(data.folders)).catch(() => {})
+  }, [])
 
   const handleFile = (selected) => {
     if (selected && selected.size > 0) {
-      if (selected.size > 5 * 1024 * 1024) {
-        setError('File too large. Max 5MB allowed for browser storage.')
+      if (selected.size > 500 * 1024 * 1024) {
+        setError('File too large. Max 500MB allowed.')
         return
       }
       setError('')
@@ -38,63 +44,30 @@ export default function Upload() {
 
   const handleDragLeave = () => setDragOver(false)
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!file) return
     setUploading(true)
     setProgress(0)
     setError('')
 
-    const reader = new FileReader()
-    reader.onload = () => {
-      const content = reader.result
+    const formData = new FormData()
+    formData.append('file', file)
+    if (selectedFolder) formData.append('folderId', selectedFolder)
 
-      const interval = setInterval(() => {
-        setProgress(prev => {
-          const next = prev + Math.floor(Math.random() * 15) + 5
-          if (next >= 100) {
-            clearInterval(interval)
-            setUploading(false)
-            setUploaded(true)
-
-            const iconMap = {
-              'image/': '\uD83D\uDDBC\uFE0F',
-              'video/': '\uD83C\uDFA5',
-              'text/': '\uD83D\uDCDD',
-              'application/pdf': '\uD83D\uDCC4',
-            }
-            let icon = '\uD83D\uDCC4'
-            for (const [prefix, emoji] of Object.entries(iconMap)) {
-              if (file.type.startsWith(prefix) || file.type === prefix) {
-                icon = emoji
-                break
-              }
-            }
-
-            const fileMeta = {
-              id: generateId(),
-              name: file.name,
-              type: file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : 'document',
-              size: formatSize(file.size),
-              date: new Date().toISOString().slice(0, 10),
-              icon,
-              mime: file.type || 'application/octet-stream',
-              content,
-            }
-
-            saveFile(fileMeta)
-            addActivity('uploaded', file.name)
-
-            return 100
-          }
-          return next
-        })
-      }, 300)
-    }
-    reader.onerror = () => {
-      setError('Failed to read file.')
+    try {
+      await client.post('/files/upload', formData, {
+        onUploadProgress: (e) => {
+          const pct = Math.round((e.loaded / e.total) * 100)
+          setProgress(pct)
+        },
+      })
+      setProgress(100)
+      setUploading(false)
+      setUploaded(true)
+    } catch (err) {
+      setError(err.response?.data?.message || 'Upload failed')
       setUploading(false)
     }
-    reader.readAsDataURL(file)
   }
 
   const removeFile = () => {
@@ -103,6 +76,11 @@ export default function Upload() {
     setUploading(false)
     setUploaded(false)
     setError('')
+  }
+
+  const resetUpload = () => {
+    removeFile()
+    setSelectedFolder('')
   }
 
   const formatSize = (bytes) => {
@@ -136,7 +114,7 @@ export default function Upload() {
             <div className="dropzone-content">
               <div className="dropzone-icon">{'\uD83D\uDCE4'}</div>
               <h3>Drag & drop your file here</h3>
-              <p>or click to browse (max 5MB)</p>
+              <p>or click to browse (max 500MB)</p>
               <button className="btn btn-primary" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }}>
                 Browse Files
               </button>
@@ -156,6 +134,18 @@ export default function Upload() {
             </div>
           )}
         </div>
+
+        {folders.length > 0 && (
+          <div className="form-group" style={{ marginTop: '1rem' }}>
+            <label>Upload to folder</label>
+            <select value={selectedFolder} onChange={e => setSelectedFolder(e.target.value)}>
+              <option value="">Root (no folder)</option>
+              {folders.map(f => (
+                <option key={f._id} value={f._id}>{f.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {error && <p className="upload-error">{error}</p>}
 
@@ -177,6 +167,9 @@ export default function Upload() {
         {uploaded && (
           <div className="success-msg" style={{ textAlign: 'center' }}>
             {'\u2705'} File uploaded successfully!
+            <div style={{ marginTop: '0.75rem' }}>
+              <button className="btn btn-primary btn-sm" onClick={resetUpload}>Upload Another</button>
+            </div>
           </div>
         )}
       </div>

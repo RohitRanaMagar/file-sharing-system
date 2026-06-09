@@ -1,16 +1,83 @@
-﻿import { useState } from 'react'
-import { getFiles, deleteFile as deleteStoredFile } from '../../data/fileStorage'
+﻿import { useState, useEffect } from 'react'
+import client from '../../api/client'
 import FileCard from '../../components/FileCard/FileCard'
 import FilePreview from '../../components/FilePreview/FilePreview'
+import ShareDialog from '../../components/ShareDialog/ShareDialog'
+import FolderBreadcrumb from './components/FolderBreadcrumb'
 import './MyFiles.css'
 
 const filters = ['All', 'Images', 'Documents', 'Videos', 'Others']
 
 export default function MyFiles() {
-  const [files, setFiles] = useState(getFiles)
+  const [files, setFiles] = useState([])
+  const [folders, setFolders] = useState([])
   const [search, setSearch] = useState('')
   const [activeFilter, setActiveFilter] = useState('All')
   const [previewFile, setPreviewFile] = useState(null)
+  const [shareFile, setShareFile] = useState(null)
+  const [currentFolder, setCurrentFolder] = useState(null)
+  const [folderPath, setFolderPath] = useState([])
+  const [showNewFolder, setShowNewFolder] = useState(false)
+  const [newFolderName, setNewFolderName] = useState('')
+
+  useEffect(() => {
+    loadFiles()
+    loadFolders()
+  }, [currentFolder])
+
+  const loadFiles = async () => {
+    try {
+      const params = currentFolder ? `?folder=${currentFolder}` : '?folder=null'
+      const { data } = await client.get(`/files${params}`)
+      setFiles(data.files)
+    } catch {}
+  }
+
+  const loadFolders = async () => {
+    try {
+      const params = currentFolder ? `?parent=${currentFolder}` : ''
+      const { data } = await client.get(`/folders${params}`)
+      setFolders(data.folders)
+    } catch {}
+  }
+
+  const navigateToFolder = async (folderId) => {
+    setCurrentFolder(folderId)
+    if (folderId) {
+      const idx = folderPath.findIndex(f => f._id === folderId)
+      if (idx !== -1) {
+        setFolderPath(folderPath.slice(0, idx + 1))
+      } else {
+        try {
+          const { data } = await client.get(`/folders/${folderId}`)
+          setFolderPath([...folderPath, data.folder])
+        } catch {}
+      }
+    } else {
+      setFolderPath([])
+    }
+  }
+
+  const createFolder = async () => {
+    if (!newFolderName.trim()) return
+    try {
+      await client.post('/folders', {
+        name: newFolderName.trim(),
+        parent: currentFolder,
+      })
+      setNewFolderName('')
+      setShowNewFolder(false)
+      loadFolders()
+    } catch {}
+  }
+
+  const deleteFolder = async (id) => {
+    if (!confirm('Delete this folder and all its contents?')) return
+    try {
+      await client.delete(`/folders/${id}`)
+      loadFolders()
+    } catch {}
+  }
 
   const getType = (type) => {
     if (type === 'image') return 'Images'
@@ -20,39 +87,59 @@ export default function MyFiles() {
   }
 
   const filtered = files.filter(f => {
-    const matchSearch = f.name.toLowerCase().includes(search.toLowerCase())
+    const matchSearch = f.originalName.toLowerCase().includes(search.toLowerCase())
     const matchFilter = activeFilter === 'All' || getType(f.type) === activeFilter
     return matchSearch && matchFilter
   })
 
-  const handleDelete = (id) => {
-    deleteStoredFile(id)
-    setFiles(getFiles())
+  const handleDelete = async (id) => {
+    try {
+      await client.delete(`/files/${id}`)
+      loadFiles()
+    } catch {}
   }
 
-  const handleView = (file) => {
-    if (file.content) {
+  const handleView = async (file) => {
+    try {
+      const res = await client.get(`/files/download/${file._id}`, { responseType: 'blob' })
+      const blobUrl = URL.createObjectURL(res.data)
       if (file.type === 'image') {
-        setPreviewFile(file)
+        setPreviewFile({ ...file, content: blobUrl })
       } else {
-        window.open(file.content, '_blank')
+        const a = document.createElement('a')
+        a.href = blobUrl
+        a.download = file.originalName
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 60000)
       }
-    } else {
-      alert('Preview not available.')
-    }
+    } catch {}
   }
 
-  const handleDownload = (file) => {
-    if (file.content) {
+  const handleDownload = async (file) => {
+    try {
+      const res = await client.get(`/files/download/${file._id}`, { responseType: 'blob' })
+      const blobUrl = URL.createObjectURL(res.data)
       const a = document.createElement('a')
-      a.href = file.content
-      a.download = file.name
+      a.href = blobUrl
+      a.download = file.originalName
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
-    } else {
-      alert('Download not available.')
-    }
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 60000)
+    } catch {}
+  }
+
+  const formatSize = (bytes) => {
+    if (bytes < 1024) return bytes + ' B'
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
+  }
+
+  const typeIcon = (type) => {
+    const map = { image: '\uD83D\uDDBC\uFE0F', video: '\uD83C\uDFA5', document: '\uD83D\uDCC4', other: '\uD83D\uDCC1' }
+    return map[type] || '\uD83D\uDCC1'
   }
 
   return (
@@ -61,6 +148,29 @@ export default function MyFiles() {
         <h2 className="section-title" style={{ marginBottom: 0 }}>My Files</h2>
         <p className="section-subtitle" style={{ marginBottom: 0 }}>Manage your uploaded files</p>
       </div>
+
+      <FolderBreadcrumb path={folderPath} onNavigate={navigateToFolder} />
+
+      <div className="myfiles-toolbar">
+        <button className="btn btn-sm btn-primary" onClick={() => setShowNewFolder(!showNewFolder)}>
+          + New Folder
+        </button>
+      </div>
+
+      {showNewFolder && (
+        <div className="new-folder-form card">
+          <input
+            type="text"
+            placeholder="Folder name"
+            value={newFolderName}
+            onChange={e => setNewFolderName(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && createFolder()}
+            autoFocus
+          />
+          <button className="btn btn-sm btn-primary" onClick={createFolder}>Create</button>
+          <button className="btn btn-sm btn-secondary" onClick={() => { setShowNewFolder(false); setNewFolderName('') }}>Cancel</button>
+        </div>
+      )}
 
       <div className="myfiles-controls">
         <div className="search-bar">
@@ -85,7 +195,26 @@ export default function MyFiles() {
         </div>
       </div>
 
-      {filtered.length === 0 ? (
+      {folders.length > 0 && (
+        <div className="folders-section">
+          <h4 className="folders-title">Folders</h4>
+          <div className="files-grid">
+            {folders.map(f => (
+              <FileCard
+                key={f._id}
+                file={{ id: f._id, name: f.name, type: 'folder' }}
+                isFolder
+                onFolderClick={(folder) => navigateToFolder(folder.id)}
+                onDelete={deleteFolder}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {(folders.length > 0 && filtered.length > 0) && <hr className="section-divider" />}
+
+      {filtered.length === 0 && folders.length === 0 ? (
         <div className="empty-state card">
           <h3>No files found</h3>
           <p>Try adjusting your search or filter.</p>
@@ -94,11 +223,22 @@ export default function MyFiles() {
         <div className="files-grid">
           {filtered.map(f => (
             <FileCard
-              key={f.id}
-              file={f}
+              key={f._id}
+              file={{
+                id: f._id,
+                name: f.originalName,
+                type: f.type,
+                size: formatSize(f.size),
+                date: new Date(f.uploadedAt).toISOString().slice(0, 10),
+                icon: typeIcon(f.type),
+                mime: f.mimeType,
+                content: null,
+                _serverFile: f,
+              }}
               onView={handleView}
               onDownload={handleDownload}
               onDelete={handleDelete}
+              onShare={setShareFile}
             />
           ))}
         </div>
@@ -106,6 +246,10 @@ export default function MyFiles() {
 
       {previewFile && (
         <FilePreview file={previewFile} onClose={() => setPreviewFile(null)} />
+      )}
+
+      {shareFile && (
+        <ShareDialog file={shareFile} onClose={() => setShareFile(null)} />
       )}
     </div>
   )

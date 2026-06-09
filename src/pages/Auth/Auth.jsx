@@ -52,7 +52,7 @@ export default function Auth() {
   const [passwordStrength, setPasswordStrength] = useState({ score: 0, label: '', color: '', feedback: [] })
   const [suggestedPassword, setSuggestedPassword] = useState('')
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
     setLoginError('')
     setLoginSuccess('')
@@ -60,7 +60,7 @@ export default function Auth() {
       setLoginError('Please fill in all fields')
       return
     }
-    const result = login(loginForm.email, loginForm.password)
+    const result = await login(loginForm.email, loginForm.password)
     if (result.success) {
       setLoginSuccess('Login successful! Redirecting...')
       setTimeout(() => navigate('/dashboard'), 500)
@@ -69,7 +69,7 @@ export default function Auth() {
     }
   }
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault()
     setRegErrors({})
     setRegSuccess('')
@@ -84,7 +84,7 @@ export default function Auth() {
     setSuggestedPassword('')
     if (Object.keys(errors).length) { setRegErrors(errors); return }
 
-    const result = register(regForm.name, regForm.email, regForm.password)
+    const result = await register(regForm.name, regForm.email, regForm.password)
     if (result.success) {
       setRegSuccess('Registration successful! Please login.')
       setRegForm({ name: '', email: '', password: '', confirm: '' })

@@ -14,13 +14,19 @@ export default function Profile() {
     supervisor: user?.supervisor || '',
   })
   const [saved, setSaved] = useState(false)
+  const [saveError, setSaveError] = useState('')
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault()
-    updateProfile(form)
-    setEditing(false)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
+    setSaveError('')
+    const result = await updateProfile(form)
+    if (result.success) {
+      setEditing(false)
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+    } else {
+      setSaveError(result.message)
+    }
   }
 
   return (
@@ -37,7 +43,8 @@ export default function Profile() {
           )}
         </div>
 
-        {saved && <div className="success-msg">Profile updated successfully!</div>}
+        {saved && <div className="success-msg" style={{ textAlign: 'center', marginBottom: '1rem' }}>Profile updated successfully!</div>}
+        {saveError && <div className="error-msg" style={{ textAlign: 'center', marginBottom: '1rem' }}>{saveError}</div>}
 
         {editing ? (
           <form className="profile-form" onSubmit={handleSave}>
@@ -99,6 +106,10 @@ export default function Profile() {
             <div className="profile-detail">
               <span className="detail-label">Last Login</span>
               <span className="detail-value">{user?.lastLogin || 'N/A'}</span>
+            </div>
+            <div className="profile-detail">
+              <span className="detail-label">Member Since</span>
+              <span className="detail-value">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</span>
             </div>
           </div>
         )}

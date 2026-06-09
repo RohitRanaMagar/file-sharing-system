@@ -1,33 +1,59 @@
-﻿import { Link } from 'react-router-dom'
+﻿import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { getFiles, getActivity } from '../../data/fileStorage'
+import client from '../../api/client'
 import StatCard from '../../components/StatCard/StatCard'
 import './Dashboard.css'
 
 export default function Dashboard() {
   const { user } = useAuth()
-  const files = getFiles()
-  const activity = getActivity()
+  const [files, setFiles] = useState([])
+  const [activity, setActivity] = useState([])
+  const [shareCount, setShareCount] = useState(0)
+
+  useEffect(() => {
+    loadFiles()
+    loadActivity()
+    loadShares()
+  }, [])
+
+  const loadFiles = async () => {
+    try {
+      const { data } = await client.get('/files')
+      setFiles(data.files)
+    } catch { }
+  }
+
+  const loadActivity = async () => {
+    try {
+      const { data } = await client.get('/files/activity')
+      setActivity(data.activity)
+    } catch { }
+  }
+
+  const loadShares = async () => {
+    try {
+      const { data } = await client.get('/share/my')
+      setShareCount(data.links.length)
+    } catch { }
+  }
 
   const totalSize = files.reduce((acc, f) => {
-    const num = parseFloat(f.size)
-    if (f.size.includes('MB')) return acc + num
-    if (f.size.includes('KB')) return acc + num / 1024
-    return acc
+    return acc + f.size
   }, 0)
 
   const stats = [
-    { icon: '📁', label: 'Total Files', value: files.length, color: '#6366f1', to: '/my-files' },
-    { icon: '🔗', label: 'Shared Files', value: '0', color: '#10b981' },
-    { icon: '📥', label: 'Activity log', value: '0', color: '#f59e0b', to: '/downloads' },
-    { icon: '💾', label: 'Storage Used', value: totalSize > 0 ? totalSize.toFixed(1) + ' MB' : '0 MB', color: '#ef4444' },
+    { icon: '\uD83D\uDCC1', label: 'Total Files', value: files.length, color: '#6366f1', to: '/my-files' },
+    { icon: '\uD83D\uDD17', label: 'Shared Files', value: shareCount, color: '#10b981', to: '/my-shares' },
+    { icon: '\uD83D\uDCE5', label: 'Activity log', value: activity.length, color: '#f59e0b', to: '/downloads' },
+    { icon: '\uD83D\uDCBE', label: 'Storage Used', value: totalSize > 0 ? formatBytes(totalSize) : '0 MB', color: '#ef4444' },
   ]
 
   const quickActions = [
-    { icon: '📤', label: 'Upload File', to: '/upload', color: '#6366f1' },
-    { icon: '📂', label: 'View Files', to: '/my-files', color: '#10b981' },
-    { icon: '👤', label: 'Manage Profile', to: '/profile', color: '#f59e0b' },
-    { icon: '⚙️', label: 'Settings', to: '/settings', color: '#ef4444' },
+    { icon: '\uD83D\uDCE4', label: 'Upload File', to: '/upload', color: '#6366f1' },
+    { icon: '\uD83D\uDCC2', label: 'View Files', to: '/my-files', color: '#10b981' },
+    { icon: '\uD83D\uDC64', label: 'Manage Profile', to: '/profile', color: '#f59e0b' },
+    { icon: '\u2699\uFE0F', label: 'Settings', to: '/settings', color: '#ef4444' },
   ]
 
   return (
@@ -56,7 +82,7 @@ export default function Dashboard() {
               <p style={{ color: 'var(--text-secondary)', padding: '1rem' }}>No activity yet.</p>
             ) : (
               activity.map((a, i) => (
-                <div className="activity-item" key={a.id}>
+                <div className="activity-item" key={a.id || i}>
                   <div className="activity-icon">{a.icon}</div>
                   <div className="activity-info">
                     <p className="activity-text">
@@ -86,4 +112,10 @@ export default function Dashboard() {
       </div>
     </div>
   )
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return bytes + ' B'
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
 }

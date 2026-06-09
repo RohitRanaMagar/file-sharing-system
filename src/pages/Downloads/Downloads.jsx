@@ -1,23 +1,33 @@
-import { useState } from 'react'
-import { getActivity, clearActivity } from '../../data/fileStorage'
+import { useState, useEffect } from 'react'
+import client from '../../api/client'
 import './Downloads.css'
 
-const actionFilters = ['All', 'Uploaded', 'Downloaded', 'Deleted', 'Edited']
+const actionFilters = ['All', 'Uploaded']
 
 export default function Downloads() {
-  const [activity, setActivity] = useState(getActivity)
+  const [activity, setActivity] = useState([])
   const [activeFilter, setActiveFilter] = useState('All')
+
+  useEffect(() => {
+    loadActivity()
+  }, [])
+
+  const loadActivity = async () => {
+    try {
+      const { data } = await client.get('/files/activity')
+      setActivity(data.activity)
+    } catch { }
+  }
 
   const filtered = activity.filter(a => {
     return activeFilter === 'All' || a.action === activeFilter.toLowerCase()
   })
 
   const handleRefresh = () => {
-    setActivity(getActivity())
+    loadActivity()
   }
 
   const handleClear = () => {
-    clearActivity()
     setActivity([])
   }
 
@@ -54,7 +64,7 @@ export default function Downloads() {
       ) : (
         <div className="activity-list">
           {filtered.map(a => (
-            <div className="activity-card card" key={a.id}>
+            <div className="activity-card card" key={a.id || a._id}>
               <div className="activity-card-icon">{a.icon}</div>
               <div className="activity-card-info">
                 <p className="activity-card-text">

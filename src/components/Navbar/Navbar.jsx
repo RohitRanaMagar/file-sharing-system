@@ -32,6 +32,9 @@ export default function Navbar() {
         { to: '/dashboard', label: 'Dashboard' },
         { to: '/my-files', label: 'My Files' },
         { to: '/upload', label: 'Upload' },
+        { to: '/my-shares', label: 'My Shares' },
+        { to: '/access', label: 'Access File' },
+        { to: '/downloads', label: 'Activity' },
         { to: '/profile', label: 'Profile' },
         { to: '/settings', label: 'Settings' },
       ]
@@ -39,6 +42,7 @@ export default function Navbar() {
         { to: '/', label: 'Home' },
         { to: '/#features', label: 'Features' },
         { to: '/#about', label: 'About' },
+        { to: '/access', label: 'Access File' },
         { to: '/contact', label: 'Contact' },
         { to: '/auth', label: 'Login/Register' },
       ]
