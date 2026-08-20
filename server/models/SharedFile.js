@@ -9,6 +9,7 @@ const sharedFileSchema = new mongoose.Schema({
   mimeType: { type: String, default: 'application/octet-stream' },
   type: { type: String, enum: ['image', 'video', 'document', 'other'], default: 'document' },
   folder: { type: mongoose.Schema.Types.ObjectId, ref: 'Folder', default: null },
+  contentHash: { type: String, default: null, index: true },
 }, { timestamps: { createdAt: 'uploadedAt', updatedAt: false } })
 
 export default mongoose.model('SharedFile', sharedFileSchema)

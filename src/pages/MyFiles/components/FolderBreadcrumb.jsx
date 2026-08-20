@@ -1,4 +1,4 @@
-import './FolderBreadcrumb.css'
+import './FolderBreadcrumb.css';
 
 export default function FolderBreadcrumb({ path, onNavigate }) {
   return (
@@ -18,5 +18,5 @@ export default function FolderBreadcrumb({ path, onNavigate }) {
         </span>
       ))}
     </div>
-  )
+  );
 }

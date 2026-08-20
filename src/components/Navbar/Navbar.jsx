@@ -1,31 +1,33 @@
-import { useState, useEffect, useRef } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { useAuth } from '../../context/AuthContext'
-import Sidebar from '../Sidebar/Sidebar'
-import './Navbar.css'
+import { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import Sidebar from '../Sidebar/Sidebar';
+import './Navbar.css';
 
 export default function Navbar() {
-  const { isAuthenticated, user, logout } = useAuth()
-  const [menuOpen, setMenuOpen] = useState(false)
-  const navigate = useNavigate()
-  const location = useLocation()
-  const navbarRef = useRef(null)
+  const { isAuthenticated, user, logout } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const navbarRef = useRef(null);
 
   useEffect(() => {
-    setMenuOpen(false)
-  }, [location])
+    setMenuOpen(false);
+  }, [location]);
 
   useEffect(() => {
-    const mq = window.matchMedia('(min-width: 769px)')
-    const handler = () => { if (mq.matches) setMenuOpen(false) }
-    mq.addEventListener('change', handler)
-    return () => mq.removeEventListener('change', handler)
-  }, [])
+    const mq = window.matchMedia('(min-width: 769px)');
+    const handler = () => {
+      if (mq.matches) {setMenuOpen(false);}
+    };
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
 
   const handleLogout = () => {
-    logout()
-    navigate('/')
-  }
+    logout();
+    navigate('/');
+  };
 
   const navLinks = isAuthenticated
     ? [
@@ -45,7 +47,7 @@ export default function Navbar() {
         { to: '/access', label: 'Access File' },
         { to: '/contact', label: 'Contact' },
         { to: '/auth', label: 'Login/Register' },
-      ]
+      ];
 
   return (
     <>
@@ -57,7 +59,7 @@ export default function Navbar() {
           </Link>
 
           <div className="navbar-links">
-            {navLinks.map(link => (
+            {navLinks.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
@@ -75,7 +77,7 @@ export default function Navbar() {
 
           <button
             className={`hamburger ${menuOpen ? 'open' : ''}`}
-            onClick={() => setMenuOpen(prev => !prev)}
+            onClick={() => setMenuOpen((prev) => !prev)}
             aria-label="Toggle menu"
           >
             <span />
@@ -94,5 +96,5 @@ export default function Navbar() {
         onLogout={handleLogout}
       />
     </>
-  )
+  );
 }

@@ -1,12 +1,14 @@
-﻿import './FilePreview.css'
+﻿import './FilePreview.css';
 
 export default function FilePreview({ file, onClose }) {
   return (
     <div className="preview-overlay" onClick={onClose}>
-      <div className="preview-modal" onClick={e => e.stopPropagation()}>
+      <div className="preview-modal" onClick={(e) => e.stopPropagation()}>
         <div className="preview-header">
           <h3>{file.name}</h3>
-          <button className="btn btn-sm btn-danger" onClick={onClose}>{'\u2715'}</button>
+          <button className="btn btn-sm btn-danger" onClick={onClose}>
+            {'\u2715'}
+          </button>
         </div>
         <div className="preview-body">
           {file.type === 'image' ? (
@@ -17,5 +19,5 @@ export default function FilePreview({ file, onClose }) {
         </div>
       </div>
     </div>
-  )
+  );
 }

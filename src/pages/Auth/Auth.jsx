@@ -1,126 +1,216 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../../context/AuthContext'
-import './Auth.css'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import './Auth.css';
 
 function getPasswordStrength(password) {
-  let score = 0
-  const feedback = []
+  let score = 0;
+  const feedback = [];
 
-  if (password.length >= 8) score++
-  else feedback.push('Use at least 8 characters')
-  if (password.length >= 12) score++
-  if (/[A-Z]/.test(password)) score++
-  else if (password.length >= 6) feedback.push('Add uppercase letters')
-  if (/[a-z]/.test(password)) score++
-  else if (password.length >= 6) feedback.push('Add lowercase letters')
-  if (/\d/.test(password)) score++
-  else if (password.length >= 6) feedback.push('Add a number')
-  if (/[^A-Za-z0-9]/.test(password)) score++
-  else if (password.length >= 6) feedback.push('Add a special character (!@#$%^&*)')
+  if (password.length >= 8) {score++;}
+  else {feedback.push('Use at least 8 characters');}
+  if (password.length >= 12) {score++;}
+  if (/[A-Z]/.test(password)) {score++;}
+  else if (password.length >= 6) {feedback.push('Add uppercase letters');}
+  if (/[a-z]/.test(password)) {score++;}
+  else if (password.length >= 6) {feedback.push('Add lowercase letters');}
+  if (/\d/.test(password)) {score++;}
+  else if (password.length >= 6) {feedback.push('Add a number');}
+  if (/[^A-Za-z0-9]/.test(password)) {score++;}
+  else if (password.length >= 6) {feedback.push('Add a special character (!@#$%^&*)');}
 
-  const labels = ['', 'Weak', 'Fair', 'Good', 'Strong', 'Very Strong']
-  const colors = ['', '#e74c3c', '#f39c12', '#3498db', '#2ecc71', '#27ae60']
-  const idx = Math.min(score, 5)
+  const labels = ['', 'Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
+  const colors = ['', '#e74c3c', '#f39c12', '#3498db', '#2ecc71', '#27ae60'];
+  const idx = Math.min(score, 5);
 
-  return { score: idx, label: labels[idx], color: colors[idx], feedback }
+  return { score: idx, label: labels[idx], color: colors[idx], feedback };
 }
 
 function generateStrongPassword() {
-  const adjectives = ['Secure', 'Strong', 'Safe', 'Fast', 'Super', 'Mega', 'Ultra', 'Easy', 'Big', 'Cool']
-  const nouns = ['Pass', 'Key', 'Lock', 'Guard', 'Shield', 'Vault', 'Gate', 'Share', 'Box', 'Hub']
-  const adj = adjectives[Math.floor(Math.random() * adjectives.length)]
-  const noun = nouns[Math.floor(Math.random() * nouns.length)]
-  const num = Math.floor(Math.random() * 90) + 10
-  const special = ['!', '@', '#', '$', '%', '&'][Math.floor(Math.random() * 6)]
-  return adj + noun + num + special
+  const adjectives = [
+    'Secure',
+    'Strong',
+    'Safe',
+    'Fast',
+    'Super',
+    'Mega',
+    'Ultra',
+    'Easy',
+    'Big',
+    'Cool',
+  ];
+  const nouns = ['Pass', 'Key', 'Lock', 'Guard', 'Shield', 'Vault', 'Gate', 'Share', 'Box', 'Hub'];
+  const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+  const noun = nouns[Math.floor(Math.random() * nouns.length)];
+  const num = Math.floor(Math.random() * 90) + 10;
+  const special = ['!', '@', '#', '$', '%', '&'][Math.floor(Math.random() * 6)];
+  return adj + noun + num + special;
 }
 
 export default function Auth() {
-  const { login, register } = useAuth()
-  const navigate = useNavigate()
-  const [tab, setTab] = useState('login')
-  const [showPassword, setShowPassword] = useState({ password: false, confirm: false })
+  const { login, register, verifyEmail, forgotPassword, resetPassword } = useAuth();
+  const navigate = useNavigate();
+  const [tab, setTab] = useState('login');
+  const [showPassword, setShowPassword] = useState({ password: false, confirm: false });
 
-  const [loginForm, setLoginForm] = useState({ email: '', password: '', remember: false })
-  const [loginError, setLoginError] = useState('')
-  const [loginSuccess, setLoginSuccess] = useState('')
+  const [loginForm, setLoginForm] = useState({ email: '', password: '', remember: false });
+  const [loginError, setLoginError] = useState('');
+  const [loginSuccess, setLoginSuccess] = useState('');
 
-  const [regForm, setRegForm] = useState({ name: '', email: '', password: '', confirm: '' })
-  const [regErrors, setRegErrors] = useState({})
-  const [regSuccess, setRegSuccess] = useState('')
-  const [passwordStrength, setPasswordStrength] = useState({ score: 0, label: '', color: '', feedback: [] })
-  const [suggestedPassword, setSuggestedPassword] = useState('')
+  const [regForm, setRegForm] = useState({ name: '', email: '', password: '', confirm: '' });
+  const [regErrors, setRegErrors] = useState({});
+  const [regSuccess, setRegSuccess] = useState('');
+  const [passwordStrength, setPasswordStrength] = useState({
+    score: 0,
+    label: '',
+    color: '',
+    feedback: [],
+  });
+  const [suggestedPassword, setSuggestedPassword] = useState('');
+
+  const [verifyToken, setVerifyToken] = useState('');
+  const [verifyMsg, setVerifyMsg] = useState('');
+  const [verifyError, setVerifyError] = useState('');
+
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotMsg, setForgotMsg] = useState('');
+  const [forgotError, setForgotError] = useState('');
+  const [resetToken, setResetToken] = useState('');
+  const [resetStep, setResetStep] = useState('email');
+  const [newPassword, setNewPassword] = useState('');
+  const [resetSuccess, setResetSuccess] = useState('');
 
   const handleLogin = async (e) => {
-    e.preventDefault()
-    setLoginError('')
-    setLoginSuccess('')
+    e.preventDefault();
+    setLoginError('');
+    setLoginSuccess('');
     if (!loginForm.email || !loginForm.password) {
-      setLoginError('Please fill in all fields')
-      return
+      setLoginError('Please fill in all fields');
+      return;
     }
-    const result = await login(loginForm.email, loginForm.password)
+    const result = await login(loginForm.email, loginForm.password);
     if (result.success) {
-      setLoginSuccess('Login successful! Redirecting...')
-      setTimeout(() => navigate('/dashboard'), 500)
+      setLoginSuccess('Login successful! Redirecting...');
+      setTimeout(() => navigate('/dashboard'), 500);
     } else {
-      setLoginError(result.message)
+      setLoginError(result.message);
     }
-  }
+  };
 
   const handleRegister = async (e) => {
-    e.preventDefault()
-    setRegErrors({})
-    setRegSuccess('')
-    const errors = {}
-    if (!regForm.name.trim()) errors.name = 'Name is required'
-    if (!regForm.email.trim()) errors.email = 'Email is required'
-    else if (!/\S+@\S+\.\S+/.test(regForm.email)) errors.email = 'Invalid email format'
-    if (!regForm.password) errors.password = 'Password is required'
-    else if (regForm.password.length < 6) errors.password = 'At least 6 characters'
-    if (regForm.password !== regForm.confirm) errors.confirm = 'Passwords do not match'
-    setPasswordStrength({ score: 0, label: '', color: '', feedback: [] })
-    setSuggestedPassword('')
-    if (Object.keys(errors).length) { setRegErrors(errors); return }
-
-    const result = await register(regForm.name, regForm.email, regForm.password)
-    if (result.success) {
-      setRegSuccess('Registration successful! Please login.')
-      setRegForm({ name: '', email: '', password: '', confirm: '' })
-      setPasswordStrength({ score: 0, label: '', color: '', feedback: [] })
-      setSuggestedPassword('')
-      setTimeout(() => setTab('login'), 800)
-    } else {
-      setRegErrors({ general: result.message })
+    e.preventDefault();
+    setRegErrors({});
+    setRegSuccess('');
+    const errors = {};
+    if (!regForm.name.trim()) {errors.name = 'Name is required';}
+    if (!regForm.email.trim()) {errors.email = 'Email is required';}
+    else if (!/\S+@\S+\.\S+/.test(regForm.email)) {errors.email = 'Invalid email format';}
+    if (!regForm.password) {errors.password = 'Password is required';}
+    else if (regForm.password.length < 6) {errors.password = 'At least 6 characters';}
+    if (regForm.password !== regForm.confirm) {errors.confirm = 'Passwords do not match';}
+    setPasswordStrength({ score: 0, label: '', color: '', feedback: [] });
+    setSuggestedPassword('');
+    if (Object.keys(errors).length) {
+      setRegErrors(errors);
+      return;
     }
-  }
 
-  const handleRegPasswordChange = (e) => {
-    const value = e.target.value
-    setRegForm({ ...regForm, password: value })
-    setRegErrors({ ...regErrors, password: '' })
-    if (value.length >= 6) {
-      const strength = getPasswordStrength(value)
-      setPasswordStrength(strength)
-      if (strength.score <= 2) {
-        if (!suggestedPassword) setSuggestedPassword(generateStrongPassword())
+    const result = await register(regForm.name, regForm.email, regForm.password);
+    if (result.success) {
+      setRegSuccess('Registration successful! Please check your email to verify.');
+      if (result.verificationToken) {
+        setVerifyToken(result.verificationToken);
+      }
+      setRegForm({ name: '', email: '', password: '', confirm: '' });
+      setPasswordStrength({ score: 0, label: '', color: '', feedback: [] });
+      setSuggestedPassword('');
+      setTimeout(() => setTab('login'), 800);
+    } else {
+      setRegErrors({ general: result.message });
+    }
+  };
+
+  const handleVerifyEmail = async () => {
+    setVerifyError('');
+    setVerifyMsg('');
+    if (!verifyToken.trim()) {
+      setVerifyError('Enter your verification token');
+      return;
+    }
+    const result = await verifyEmail(verifyToken.trim());
+    if (result.success) {
+      setVerifyMsg('Email verified successfully! You can now log in.');
+    } else {
+      setVerifyError(result.message);
+    }
+  };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setForgotError('');
+    setForgotMsg('');
+    if (!forgotEmail.trim()) {
+      setForgotError('Enter your email');
+      return;
+    }
+    const result = await forgotPassword(forgotEmail.trim());
+    if (result.success) {
+      if (result.resetToken) {
+        setResetToken(result.resetToken);
+        setResetStep('reset');
       } else {
-        setSuggestedPassword('')
+        setForgotMsg('If an account exists, a reset link has been sent.');
       }
     } else {
-      setPasswordStrength({ score: 0, label: '', color: '', feedback: [] })
-      setSuggestedPassword('')
+      setForgotError(result.message);
     }
-  }
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    setForgotError('');
+    setResetSuccess('');
+    if (newPassword.length < 6) {
+      setForgotError('Password must be at least 6 characters');
+      return;
+    }
+    const result = await resetPassword(resetToken, newPassword);
+    if (result.success) {
+      setResetSuccess('Password reset successful! You can now log in.');
+      setTimeout(() => {
+        setTab('login');
+        setResetStep('email');
+      }, 1500);
+    } else {
+      setForgotError(result.message);
+    }
+  };
+
+  const handleRegPasswordChange = (e) => {
+    const value = e.target.value;
+    setRegForm({ ...regForm, password: value });
+    setRegErrors({ ...regErrors, password: '' });
+    if (value.length >= 6) {
+      const strength = getPasswordStrength(value);
+      setPasswordStrength(strength);
+      if (strength.score <= 2) {
+        if (!suggestedPassword) {setSuggestedPassword(generateStrongPassword());}
+      } else {
+        setSuggestedPassword('');
+      }
+    } else {
+      setPasswordStrength({ score: 0, label: '', color: '', feedback: [] });
+      setSuggestedPassword('');
+    }
+  };
 
   const acceptSuggestedPassword = () => {
-    if (!suggestedPassword) return
-    setRegForm({ ...regForm, password: suggestedPassword, confirm: '' })
-    setPasswordStrength(getPasswordStrength(suggestedPassword))
-    setRegErrors({ ...regErrors, password: '', confirm: '' })
-    setSuggestedPassword('')
-  }
+    if (!suggestedPassword) {return;}
+    setRegForm({ ...regForm, password: suggestedPassword, confirm: '' });
+    setPasswordStrength(getPasswordStrength(suggestedPassword));
+    setRegErrors({ ...regErrors, password: '', confirm: '' });
+    setSuggestedPassword('');
+  };
 
   return (
     <div className="auth-page page">
@@ -131,54 +221,145 @@ export default function Auth() {
         </div>
 
         <div className="auth-tabs">
-          <button className={`auth-tab ${tab === 'login' ? 'active' : ''}`} onClick={() => setTab('login')}>Login</button>
-          <button className={`auth-tab ${tab === 'register' ? 'active' : ''}`} onClick={() => setTab('register')}>Register</button>
+          <button
+            className={`auth-tab ${tab === 'login' ? 'active' : ''}`}
+            onClick={() => setTab('login')}
+          >
+            Login
+          </button>
+          <button
+            className={`auth-tab ${tab === 'register' ? 'active' : ''}`}
+            onClick={() => setTab('register')}
+          >
+            Register
+          </button>
+          <button
+            className={`auth-tab ${tab === 'forgot' ? 'active' : ''}`}
+            onClick={() => setTab('forgot')}
+          >
+            Reset
+          </button>
         </div>
 
         {tab === 'login' && (
           <form className="auth-form" onSubmit={handleLogin}>
-            {loginError && <div className="error-msg" style={{ marginBottom: '1rem', textAlign: 'center' }}>{loginError}</div>}
+            {loginError && (
+              <div className="error-msg" style={{ marginBottom: '1rem', textAlign: 'center' }}>
+                {loginError}
+              </div>
+            )}
             {loginSuccess && <div className="success-msg">{loginSuccess}</div>}
             <div className="form-group">
               <label>Email</label>
-              <input type="email" placeholder="your@email.com" value={loginForm.email} onChange={e => setLoginForm({ ...loginForm, email: e.target.value })} />
+              <input
+                type="email"
+                placeholder="your@email.com"
+                value={loginForm.email}
+                onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
+              />
             </div>
             <div className="form-group">
               <label>Password</label>
               <div className="password-input">
-                <input type={showPassword.password ? 'text' : 'password'} placeholder="Enter password" value={loginForm.password} onChange={e => setLoginForm({ ...loginForm, password: e.target.value })} />
-                <button type="button" className="toggle-password" onClick={() => setShowPassword({ ...showPassword, password: !showPassword.password })}>
+                <input
+                  type={showPassword.password ? 'text' : 'password'}
+                  placeholder="Enter password"
+                  value={loginForm.password}
+                  onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+                />
+                <button
+                  type="button"
+                  className="toggle-password"
+                  onClick={() =>
+                    setShowPassword({ ...showPassword, password: !showPassword.password })
+                  }
+                >
                   {showPassword.password ? '🙈' : '👁️'}
                 </button>
               </div>
             </div>
-            <label className="remember-label">
-              <input type="checkbox" checked={loginForm.remember} onChange={e => setLoginForm({ ...loginForm, remember: e.target.checked })} />
-              <span>Remember me</span>
-            </label>
-            <button type="submit" className="btn btn-primary auth-submit">Login</button>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '1rem',
+              }}
+            >
+              <label className="remember-label" style={{ marginBottom: 0 }}>
+                <input
+                  type="checkbox"
+                  checked={loginForm.remember}
+                  onChange={(e) => setLoginForm({ ...loginForm, remember: e.target.checked })}
+                />
+                <span>Remember me</span>
+              </label>
+              <button
+                type="button"
+                className="btn btn-link btn-sm"
+                onClick={() => setTab('forgot')}
+                style={{
+                  padding: 0,
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--primary)',
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                }}
+              >
+                Forgot Password?
+              </button>
+            </div>
+            <button type="submit" className="btn btn-primary auth-submit">
+              Login
+            </button>
           </form>
         )}
 
         {tab === 'register' && (
           <form className="auth-form" onSubmit={handleRegister}>
-            {regErrors.general && <div className="error-msg" style={{ marginBottom: '1rem', textAlign: 'center' }}>{regErrors.general}</div>}
+            {regErrors.general && (
+              <div className="error-msg" style={{ marginBottom: '1rem', textAlign: 'center' }}>
+                {regErrors.general}
+              </div>
+            )}
             {regSuccess && <div className="success-msg">{regSuccess}</div>}
             <div className="form-group">
               <label>Full Name</label>
-              <input type="text" placeholder="John Doe" value={regForm.name} onChange={e => setRegForm({ ...regForm, name: e.target.value })} />
+              <input
+                type="text"
+                placeholder="John Doe"
+                value={regForm.name}
+                onChange={(e) => setRegForm({ ...regForm, name: e.target.value })}
+              />
               {regErrors.name && <span className="error-msg">{regErrors.name}</span>}
             </div>
             <div className="form-group">
               <label>Email</label>
-              <input type="email" placeholder="your@email.com" value={regForm.email} onChange={e => setRegForm({ ...regForm, email: e.target.value })} />
+              <input
+                type="email"
+                placeholder="your@email.com"
+                value={regForm.email}
+                onChange={(e) => setRegForm({ ...regForm, email: e.target.value })}
+              />
               {regErrors.email && <span className="error-msg">{regErrors.email}</span>}
             </div>
             <div className="form-group">
               <label>Password</label>
               <div className="password-input">
-                <input type={showPassword.password ? 'text' : 'password'} placeholder="At least 6 characters" value={regForm.password} onChange={handleRegPasswordChange} />
-                <button type="button" className="toggle-password" onClick={() => setShowPassword({ ...showPassword, password: !showPassword.password })}>
+                <input
+                  type={showPassword.password ? 'text' : 'password'}
+                  placeholder="At least 6 characters"
+                  value={regForm.password}
+                  onChange={handleRegPasswordChange}
+                />
+                <button
+                  type="button"
+                  className="toggle-password"
+                  onClick={() =>
+                    setShowPassword({ ...showPassword, password: !showPassword.password })
+                  }
+                >
                   {showPassword.password ? '🙈' : '👁️'}
                 </button>
               </div>
@@ -186,18 +367,39 @@ export default function Auth() {
               {regForm.password.length >= 6 && (
                 <div className="password-strength-area">
                   <div className="strength-meter">
-                    <div className="strength-bar" style={{ width: `${(passwordStrength.score / 5) * 100}%`, backgroundColor: passwordStrength.color }} />
+                    <div
+                      className="strength-bar"
+                      style={{
+                        width: `${(passwordStrength.score / 5) * 100}%`,
+                        backgroundColor: passwordStrength.color,
+                      }}
+                    />
                   </div>
-                  <span className="strength-label" style={{ color: passwordStrength.color || 'var(--text-muted)' }}>{passwordStrength.label || 'Weak'}</span>
+                  <span
+                    className="strength-label"
+                    style={{ color: passwordStrength.color || 'var(--text-muted)' }}
+                  >
+                    {passwordStrength.label || 'Weak'}
+                  </span>
                   {passwordStrength.feedback.length > 0 && (
                     <ul className="strength-feedback">
-                      {passwordStrength.feedback.map((f, i) => <li key={i}>{f}</li>)}
+                      {passwordStrength.feedback.map((f, i) => (
+                        <li key={i}>{f}</li>
+                      ))}
                     </ul>
                   )}
                   {suggestedPassword && (
                     <div className="password-suggestion">
-                      <span>Try: <strong>{suggestedPassword}</strong></span>
-                      <button type="button" className="btn btn-primary btn-sm" onClick={acceptSuggestedPassword}>Use</button>
+                      <span>
+                        Try: <strong>{suggestedPassword}</strong>
+                      </span>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        onClick={acceptSuggestedPassword}
+                      >
+                        Use
+                      </button>
                     </div>
                   )}
                 </div>
@@ -206,17 +408,128 @@ export default function Auth() {
             <div className="form-group">
               <label>Confirm Password</label>
               <div className="password-input">
-                <input type={showPassword.confirm ? 'text' : 'password'} placeholder="Confirm your password" value={regForm.confirm} onChange={e => setRegForm({ ...regForm, confirm: e.target.value })} />
-                <button type="button" className="toggle-password" onClick={() => setShowPassword({ ...showPassword, confirm: !showPassword.confirm })}>
+                <input
+                  type={showPassword.confirm ? 'text' : 'password'}
+                  placeholder="Confirm your password"
+                  value={regForm.confirm}
+                  onChange={(e) => setRegForm({ ...regForm, confirm: e.target.value })}
+                />
+                <button
+                  type="button"
+                  className="toggle-password"
+                  onClick={() =>
+                    setShowPassword({ ...showPassword, confirm: !showPassword.confirm })
+                  }
+                >
                   {showPassword.confirm ? '🙈' : '👁️'}
                 </button>
               </div>
               {regErrors.confirm && <span className="error-msg">{regErrors.confirm}</span>}
             </div>
-            <button type="submit" className="btn btn-primary auth-submit">Register</button>
+            <button type="submit" className="btn btn-primary auth-submit">
+              Register
+            </button>
+
+            <div
+              style={{
+                marginTop: '1.5rem',
+                borderTop: '1px solid var(--border)',
+                paddingTop: '1rem',
+              }}
+            >
+              <h4 style={{ marginBottom: '0.5rem' }}>Verify Email</h4>
+              {verifyMsg && <div className="success-msg">{verifyMsg}</div>}
+              {verifyError && <div className="error-msg">{verifyError}</div>}
+              <div className="form-group" style={{ marginBottom: '0.5rem' }}>
+                <input
+                  type="text"
+                  placeholder="Paste verification token"
+                  value={verifyToken}
+                  onChange={(e) => setVerifyToken(e.target.value)}
+                />
+              </div>
+              <button type="button" className="btn btn-sm btn-primary" onClick={handleVerifyEmail}>
+                Verify Email
+              </button>
+            </div>
           </form>
+        )}
+
+        {tab === 'forgot' && (
+          <div className="auth-form">
+            {resetStep === 'email' && (
+              <form onSubmit={handleForgotPassword}>
+                {forgotMsg && <div className="success-msg">{forgotMsg}</div>}
+                {forgotError && (
+                  <div className="error-msg" style={{ marginBottom: '1rem', textAlign: 'center' }}>
+                    {forgotError}
+                  </div>
+                )}
+                {resetSuccess && <div className="success-msg">{resetSuccess}</div>}
+                <p style={{ marginBottom: '1rem', color: 'var(--text-muted)' }}>
+                  Enter your email to receive a password reset token.
+                </p>
+                <div className="form-group">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                  />
+                </div>
+                <button type="submit" className="btn btn-primary auth-submit">
+                  Send Reset Token
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary auth-submit"
+                  style={{ marginTop: '0.5rem' }}
+                  onClick={() => setTab('login')}
+                >
+                  Back to Login
+                </button>
+              </form>
+            )}
+            {resetStep === 'reset' && (
+              <form onSubmit={handleResetPassword}>
+                {forgotError && (
+                  <div className="error-msg" style={{ marginBottom: '1rem', textAlign: 'center' }}>
+                    {forgotError}
+                  </div>
+                )}
+                {resetSuccess && <div className="success-msg">{resetSuccess}</div>}
+                <p style={{ marginBottom: '1rem', color: 'var(--text-muted)' }}>
+                  Enter your new password.
+                </p>
+                <div className="form-group">
+                  <label>New Password</label>
+                  <input
+                    type="password"
+                    placeholder="At least 6 characters"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                  />
+                </div>
+                <button type="submit" className="btn btn-primary auth-submit">
+                  Reset Password
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary auth-submit"
+                  style={{ marginTop: '0.5rem' }}
+                  onClick={() => {
+                    setResetStep('email');
+                    setTab('login');
+                  }}
+                >
+                  Back to Login
+                </button>
+              </form>
+            )}
+          </div>
         )}
       </div>
     </div>
-  )
+  );
 }

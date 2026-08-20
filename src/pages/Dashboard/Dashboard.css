@@ -1,23 +1,23 @@
 .dashboard-welcome {
   display: flex;
-  align-items: center;
   gap: 1.25rem;
+  align-items: center;
   padding: 1.5rem 2rem;
   margin-bottom: 1.5rem;
 }
 
 .welcome-avatar {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: var(--primary);
-  color: white;
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  width: 60px;
+  height: 60px;
   font-size: 1.5rem;
   font-weight: 700;
-  flex-shrink: 0;
+  color: white;
+  background: var(--primary);
+  border-radius: 50%;
 }
 
 .welcome-info h2 {
@@ -26,9 +26,9 @@
 }
 
 .welcome-login {
-  color: var(--text-muted);
-  font-size: 0.85rem;
   margin-top: 0.2rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
 }
 
 .stats-grid {
@@ -39,9 +39,9 @@
 }
 
 .section-heading {
+  margin-bottom: 1rem;
   font-size: 1.15rem;
   font-weight: 700;
-  margin-bottom: 1rem;
 }
 
 .dashboard-grid {
@@ -62,8 +62,8 @@
 
 .activity-item {
   display: flex;
-  align-items: flex-start;
   gap: 0.75rem;
+  align-items: flex-start;
   padding: 0.75rem 0;
   border-bottom: 1px solid var(--border);
 }
@@ -73,15 +73,15 @@
 }
 
 .activity-icon {
-  font-size: 1.2rem;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--bg-secondary);
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  font-size: 1.2rem;
+  background: var(--bg-secondary);
+  border-radius: 50%;
 }
 
 .activity-text {
@@ -107,14 +107,14 @@
 }
 
 .quick-action-card {
-  padding: 1.25rem;
-  text-align: center;
-  text-decoration: none;
-  color: var(--text);
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 0.5rem;
+  align-items: center;
+  padding: 1.25rem;
+  color: var(--text);
+  text-align: center;
+  text-decoration: none;
 }
 
 .quick-action-card:hover {
@@ -122,13 +122,13 @@
 }
 
 .quick-action-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 48px;
+  height: 48px;
   font-size: 1.3rem;
+  border-radius: var(--radius-sm);
 }
 
 .quick-action-label {
@@ -136,7 +136,7 @@
   font-weight: 600;
 }
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -146,11 +146,11 @@
   }
 }
 
-@media (max-width: 425px) {
+@media (width <= 425px) {
   .dashboard-welcome {
     flex-direction: column;
-    text-align: center;
     padding: 1.25rem;
+    text-align: center;
   }
 
   .stats-grid {

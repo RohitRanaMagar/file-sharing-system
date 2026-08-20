@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom'
-import './StatCard.css'
+import { Link } from 'react-router-dom';
+import './StatCard.css';
 
 export default function StatCard({ icon, label, value, color, to }) {
   const content = (
@@ -12,11 +12,15 @@ export default function StatCard({ icon, label, value, color, to }) {
         <p className="stat-card-label">{label}</p>
       </div>
     </>
-  )
+  );
 
   if (to) {
-    return <Link to={to} className="stat-card card stat-card-link">{content}</Link>
+    return (
+      <Link to={to} className="stat-card card stat-card-link">
+        {content}
+      </Link>
+    );
   }
 
-  return <div className="stat-card card">{content}</div>
+  return <div className="stat-card card">{content}</div>;
 }

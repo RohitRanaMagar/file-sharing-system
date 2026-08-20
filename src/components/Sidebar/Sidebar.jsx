@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom'
-import './Sidebar.css'
+import { Link } from 'react-router-dom';
+import './Sidebar.css';
 
 export default function Sidebar({ isOpen, onClose, navLinks, isAuthenticated, user, onLogout }) {
   return (
@@ -15,9 +15,7 @@ export default function Sidebar({ isOpen, onClose, navLinks, isAuthenticated, us
 
         {isAuthenticated && user && (
           <div className="sidebar-user">
-            <div className="sidebar-avatar">
-              {user.name?.charAt(0)?.toUpperCase() || 'U'}
-            </div>
+            <div className="sidebar-avatar">{user.name?.charAt(0)?.toUpperCase() || 'U'}</div>
             <div className="sidebar-user-info">
               <p className="sidebar-user-name">{user.name}</p>
               <p className="sidebar-user-email">{user.email}</p>
@@ -26,13 +24,8 @@ export default function Sidebar({ isOpen, onClose, navLinks, isAuthenticated, us
         )}
 
         <div className="sidebar-links">
-          {navLinks.map(link => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className="sidebar-link"
-              onClick={onClose}
-            >
+          {navLinks.map((link) => (
+            <Link key={link.to} to={link.to} className="sidebar-link" onClick={onClose}>
               {link.label}
             </Link>
           ))}
@@ -49,5 +42,5 @@ export default function Sidebar({ isOpen, onClose, navLinks, isAuthenticated, us
         </div>
       </aside>
     </>
-  )
+  );
 }

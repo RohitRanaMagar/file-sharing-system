@@ -4,31 +4,31 @@
 }
 
 .profile-card {
-  padding: 2rem;
   width: min(550px, 100%);
+  padding: 2rem;
 }
 
 .profile-header {
   display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
   margin-bottom: 2rem;
-  flex-wrap: wrap;
 }
 
 .profile-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: var(--primary);
-  color: white;
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  width: 80px;
+  height: 80px;
   font-size: 2rem;
   font-weight: 700;
-  flex-shrink: 0;
+  color: white;
+  background: var(--primary);
+  border-radius: 50%;
 }
 
 .profile-form {
@@ -51,11 +51,11 @@
 
 .profile-detail {
   display: flex;
-  justify-content: space-between;
+  gap: 1rem;
   align-items: center;
+  justify-content: space-between;
   padding: 0.75rem 0;
   border-bottom: 1px solid var(--border);
-  gap: 1rem;
 }
 
 .profile-detail:last-child {
@@ -63,21 +63,21 @@
 }
 
 .detail-label {
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
   flex-shrink: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
 }
 
 .detail-value {
+  max-width: 60%;
   font-size: 0.95rem;
   color: var(--text);
   text-align: right;
   word-break: break-word;
-  max-width: 60%;
 }
 
-@media (max-width: 425px) {
+@media (width <= 425px) {
   .profile-card {
     padding: 1.25rem;
   }
@@ -89,12 +89,12 @@
 
   .profile-detail {
     flex-direction: column;
-    align-items: flex-start;
     gap: 0.25rem;
+    align-items: flex-start;
   }
 
   .detail-value {
-    text-align: left;
     max-width: 100%;
+    text-align: left;
   }
 }

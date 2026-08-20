@@ -10,6 +10,11 @@ const userSchema = new mongoose.Schema({
   semester: { type: String, default: '' },
   supervisor: { type: String, default: '' },
   lastLogin: { type: String, default: null },
+  isVerified: { type: Boolean, default: false },
+  verificationToken: { type: String, default: null },
+  isAdmin: { type: Boolean, default: false },
+  resetPasswordToken: { type: String, default: null },
+  resetPasswordExpires: { type: Date, default: null },
 }, { timestamps: true })
 
 userSchema.pre('save', async function (next) {

@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom'
-import './Footer.css'
+import { Link } from 'react-router-dom';
+import './Footer.css';
 
 export default function Footer() {
-  const year = new Date().getFullYear()
+  const year = new Date().getFullYear();
 
   return (
     <footer className="footer">
@@ -11,18 +11,29 @@ export default function Footer() {
           <div className="footer-col">
             <h3 className="footer-heading">EasyShare</h3>
             <p className="footer-desc">
-              A college project file sharing platform built with React.js for easy file management and sharing.
+              A college project file sharing platform built with React.js for easy file management
+              and sharing.
             </p>
           </div>
 
           <div className="footer-col">
             <h3 className="footer-heading">Quick Links</h3>
             <ul className="footer-links">
-              <li><Link to="/">Home</Link></li>
-              <li><Link to="/auth">Login/Register</Link></li>
-              <li><Link to="/contact">Contact</Link></li>
-              <li><Link to="/faq">FAQ</Link></li>
-              <li><Link to="/help">Help</Link></li>
+              <li>
+                <Link to="/">Home</Link>
+              </li>
+              <li>
+                <Link to="/auth">Login/Register</Link>
+              </li>
+              <li>
+                <Link to="/contact">Contact</Link>
+              </li>
+              <li>
+                <Link to="/faq">FAQ</Link>
+              </li>
+              <li>
+                <Link to="/help">Help</Link>
+              </li>
             </ul>
           </div>
 
@@ -41,5 +52,5 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }

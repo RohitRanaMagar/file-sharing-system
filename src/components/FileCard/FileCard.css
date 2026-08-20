@@ -1,74 +1,172 @@
 .file-card {
+  position: relative;
   display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
+  flex-direction: column;
+  padding: 1.25rem;
+  cursor: pointer;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  transition: all var(--transition);
   overflow: hidden;
+}
+
+.file-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.file-card:hover::before {
+  transform: scaleX(1);
+}
+
+.file-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--primary-light);
 }
 
 .file-card-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.4rem;
-  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg) 100%);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
 }
 
-.file-card-info {
+.file-card:hover .file-card-icon {
+  transform: scale(1.1);
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--bg-secondary) 100%);
+  box-shadow: var(--shadow-md);
+}
+
+.file-card-content {
+  display: flex;
   flex: 1;
+  flex-direction: column;
   min-width: 0;
 }
 
-.file-card-name {
+.file-card-title {
+  margin-bottom: 0.375rem;
+  font-family: var(--font-heading);
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--text);
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  word-break: break-word;
 }
 
 .file-card-meta {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
   font-size: 0.8rem;
   color: var(--text-muted);
-  margin-top: 0.2rem;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  flex-wrap: wrap;
 }
 
-.file-card-dot {
-  font-weight: 700;
+.file-card-meta span {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
 }
 
 .file-card-actions {
   display: flex;
-  gap: 0.4rem;
-  flex-shrink: 0;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
 }
 
-.file-card-actions .btn {
-  padding: 0.4rem 0.5rem;
-  font-size: 0.85rem;
-  min-width: 34px;
+.file-card-btn {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: 1rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
 }
 
-@media (max-width: 425px) {
-  .file-card {
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
+.file-card-btn:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
 
-  .file-card-actions {
-    width: 100%;
-    justify-content: flex-end;
+.file-card-btn.delete:hover {
+  background: var(--danger-light);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+/* Folder card specific styles */
+.file-card.folder .file-card-icon {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+}
+
+.file-card.folder:hover .file-card-icon {
+  background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
+}
+
+/* Image card specific styles */
+.file-card.image .file-card-icon {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+}
+
+/* Video card specific styles */
+.file-card.video .file-card-icon {
+  background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+}
+
+/* Document card specific styles */
+.file-card.document .file-card-icon {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+}
+
+/* Grid layout support */
+.files-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .files-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+  
+  .file-card {
+    padding: 1rem;
+  }
+  
+  .file-card-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.5rem;
   }
 }

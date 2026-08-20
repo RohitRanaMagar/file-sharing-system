@@ -10,10 +10,10 @@
 
 .downloads-controls {
   display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
 }
 
 .downloads-actions {
@@ -29,21 +29,21 @@
 
 .activity-card {
   display: flex;
-  align-items: center;
   gap: 1rem;
+  align-items: center;
   padding: 1rem 1.25rem;
 }
 
 .activity-card-icon {
-  font-size: 1.3rem;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--bg-secondary);
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  font-size: 1.3rem;
+  background: var(--bg-secondary);
+  border-radius: 50%;
 }
 
 .activity-card-info {
@@ -57,13 +57,13 @@
 }
 
 .activity-card-time {
+  display: inline-block;
+  margin-top: 0.15rem;
   font-size: 0.8rem;
   color: var(--text-muted);
-  margin-top: 0.15rem;
-  display: inline-block;
 }
 
-@media (max-width: 425px) {
+@media (width <= 425px) {
   .downloads-controls {
     flex-direction: column;
     align-items: stretch;

@@ -16,14 +16,14 @@
 
 .search-bar {
   display: flex;
-  align-items: center;
   gap: 0.5rem;
+  align-items: center;
+  max-width: 500px;
   padding: 0.65rem 1rem;
   background: var(--card-bg);
   border: 2px solid var(--border);
   border-radius: var(--radius-sm);
   transition: border-color var(--transition);
-  max-width: 500px;
 }
 
 .search-bar:focus-within {
@@ -31,45 +31,45 @@
 }
 
 .search-icon {
-  font-size: 1.1rem;
   flex-shrink: 0;
+  font-size: 1.1rem;
 }
 
 .search-bar input {
-  border: none;
-  background: none;
-  outline: none;
+  width: 100%;
   font-size: 0.95rem;
   color: var(--text);
-  width: 100%;
+  outline: none;
+  background: none;
+  border: none;
 }
 
 .filter-tabs {
   display: flex;
-  gap: 0.5rem;
   flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .filter-tab {
   padding: 0.5rem 1rem;
-  border-radius: 50px;
-  background: var(--bg-secondary);
-  color: var(--text-secondary);
-  font-weight: 500;
   font-size: 0.85rem;
-  border: 1px solid var(--border);
+  font-weight: 500;
+  color: var(--text-secondary);
   cursor: pointer;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 50px;
   transition: all var(--transition);
 }
 
 .filter-tab:hover {
-  background: var(--primary-light);
   color: var(--primary);
+  background: var(--primary-light);
 }
 
 .filter-tab.active {
-  background: var(--primary);
   color: white;
+  background: var(--primary);
   border-color: var(--primary);
 }
 
@@ -79,7 +79,7 @@
   gap: 0.75rem;
 }
 
-@media (max-width: 425px) {
+@media (width <= 425px) {
   .search-bar {
     max-width: 100%;
   }

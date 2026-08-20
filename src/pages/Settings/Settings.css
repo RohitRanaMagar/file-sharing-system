@@ -2,9 +2,9 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  width: 100%;
   max-width: 600px;
   margin: 0 auto;
-  width: 100%;
 }
 
 .settings-section {
@@ -12,61 +12,61 @@
 }
 
 .settings-section-title {
+  margin-bottom: 1.25rem;
   font-size: 1.1rem;
   font-weight: 700;
-  margin-bottom: 1.25rem;
   color: var(--primary);
 }
 
 .setting-item {
   display: flex;
+  gap: 1rem;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
 }
 
 .setting-label {
-  font-weight: 600;
   font-size: 0.95rem;
+  font-weight: 600;
 }
 
 .setting-desc {
-  font-size: 0.85rem;
-  color: var(--text-muted);
   display: block;
   margin-top: 0.15rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
 }
 
 .toggle {
   position: relative;
   display: inline-block;
+  flex-shrink: 0;
   width: 48px;
   height: 26px;
-  flex-shrink: 0;
 }
 
 .toggle input {
-  opacity: 0;
   width: 0;
   height: 0;
+  opacity: 0;
 }
 
 .toggle-slider {
   position: absolute;
-  cursor: pointer;
   inset: 0;
+  cursor: pointer;
   background: var(--border);
   border-radius: 26px;
   transition: background 0.3s;
 }
 
 .toggle-slider::before {
-  content: '';
   position: absolute;
+  bottom: 3px;
+  left: 3px;
   width: 20px;
   height: 20px;
-  left: 3px;
-  bottom: 3px;
+  content: '';
   background: white;
   border-radius: 50%;
   transition: transform 0.3s;
@@ -94,11 +94,11 @@
 
 .account-row {
   display: flex;
-  justify-content: space-between;
+  gap: 1rem;
   align-items: center;
+  justify-content: space-between;
   padding: 0.5rem 0;
   border-bottom: 1px solid var(--border);
-  gap: 1rem;
 }
 
 .account-row:last-child {
@@ -106,26 +106,26 @@
 }
 
 .account-label {
-  font-weight: 600;
   font-size: 0.9rem;
+  font-weight: 600;
   color: var(--text-secondary);
 }
 
 .account-value {
   font-size: 0.95rem;
-  word-break: break-word;
   text-align: right;
+  word-break: break-word;
 }
 
-@media (max-width: 425px) {
+@media (width <= 425px) {
   .settings-section {
     padding: 1.25rem;
   }
 
   .account-row {
     flex-direction: column;
-    align-items: flex-start;
     gap: 0.15rem;
+    align-items: flex-start;
   }
 
   .account-value {

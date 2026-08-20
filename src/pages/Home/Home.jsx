@@ -1,20 +1,44 @@
-﻿import { Link } from 'react-router-dom'
-import { useAuth } from '../../context/AuthContext'
-import Footer from '../../components/Footer/Footer'
-import teamMembers from '../../data/teamMembers'
-import './Home.css'
+﻿import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import Footer from '../../components/Footer/Footer';
+import teamMembers from '../../data/teamMembers';
+import './Home.css';
 
 const features = [
-  { title: 'Secure File Sharing', desc: 'End-to-end encrypted file transfers to keep your data safe and private.', icon: '🔒' },
-  { title: 'Fast Upload', desc: 'Lightning-fast upload speeds with support for large files up to 2GB.', icon: '⚡' },
-  { title: 'Download Anywhere', desc: 'Access and download your files from any device, anytime, anywhere.', icon: '🌍' },
-  { title: 'File Preview', desc: 'Preview documents, images, and videos directly in your browser.', icon: '👁️' },
-  { title: 'Responsive Design', desc: 'Fully responsive interface that works perfectly on all screen sizes.', icon: '📱' },
-  { title: 'Easy File Management', desc: 'Organize, search, filter, and manage all your files in one place.', icon: '📁' },
-]
+  {
+    title: 'Secure File Sharing',
+    desc: 'End-to-end encrypted file transfers to keep your data safe and private.',
+    icon: '🔒',
+  },
+  {
+    title: 'Fast Upload',
+    desc: 'Lightning-fast upload speeds with support for large files up to 2GB.',
+    icon: '⚡',
+  },
+  {
+    title: 'Download Anywhere',
+    desc: 'Access and download your files from any device, anytime, anywhere.',
+    icon: '🌍',
+  },
+  {
+    title: 'File Preview',
+    desc: 'Preview documents, images, and videos directly in your browser.',
+    icon: '👁️',
+  },
+  {
+    title: 'Responsive Design',
+    desc: 'Fully responsive interface that works perfectly on all screen sizes.',
+    icon: '📱',
+  },
+  {
+    title: 'Easy File Management',
+    desc: 'Organize, search, filter, and manage all your files in one place.',
+    icon: '📁',
+  },
+];
 
 export default function Home() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuth();
 
   return (
     <div className="home">
@@ -25,20 +49,30 @@ export default function Home() {
             Welcome to <span className="hero-highlight">EasyShare</span>
           </h1>
           <p className="hero-subtitle">
-            Upload, manage, and share your files securely with a simple and modern interface.
-            Built with React.js for educational purposes.
+            Upload, manage, and share your files securely with a simple and modern interface. Built
+            with React.js for educational purposes.
           </p>
           <div className="hero-actions">
             {isAuthenticated ? (
               <>
-                <Link to="/dashboard" className="btn btn-primary">Go to Dashboard</Link>
-                <Link to="/access" className="btn btn-outline">Access a File</Link>
+                <Link to="/dashboard" className="btn btn-primary">
+                  Go to Dashboard
+                </Link>
+                <Link to="/access" className="btn btn-outline">
+                  Access a File
+                </Link>
               </>
             ) : (
               <>
-                <Link to="/auth" className="btn btn-primary">Get Started</Link>
-                <Link to="/access" className="btn btn-outline">Receive a File</Link>
-                <Link to="/auth" className="btn btn-secondary">Login</Link>
+                <Link to="/auth" className="btn btn-primary">
+                  Get Started
+                </Link>
+                <Link to="/access" className="btn btn-outline">
+                  Receive a File
+                </Link>
+                <Link to="/auth" className="btn btn-secondary">
+                  Login
+                </Link>
               </>
             )}
           </div>
@@ -75,15 +109,19 @@ export default function Home() {
             <h3>Educational Purpose</h3>
             <p>
               This project was built to showcase skills in React.js, responsive design, state
-              management using Context API, routing with React Router, and modern CSS techniques.
-              It simulates a real-world file sharing platform with authentication, file management,
-              and user settings.
+              management using Context API, routing with React Router, and modern CSS techniques. It
+              simulates a real-world file sharing platform with authentication, file management, and
+              user settings.
             </p>
             <h3>Built Using</h3>
             <div className="tech-stack">
-              {['React.js', 'Vite', 'React Router', 'Context API', 'CSS3', 'localStorage'].map(tech => (
-                <span className="tech-badge" key={tech}>{tech}</span>
-              ))}
+              {['React.js', 'Vite', 'React Router', 'Context API', 'CSS3', 'localStorage'].map(
+                (tech) => (
+                  <span className="tech-badge" key={tech}>
+                    {tech}
+                  </span>
+                ),
+              )}
             </div>
           </div>
         </div>
@@ -100,10 +138,18 @@ export default function Home() {
                 <h3 className="team-name">{m.name}</h3>
                 <p className="team-role">{m.role}</p>
                 <div className="team-details">
-                  <p><strong>Course:</strong> {m.course}</p>
-                  <p><strong>College:</strong> {m.college}</p>
-                  <p><strong>Supervisor:</strong> {m.supervisor}</p>
-                  <p><strong>Semester:</strong> {m.semester}</p>
+                  <p>
+                    <strong>Course:</strong> {m.course}
+                  </p>
+                  <p>
+                    <strong>College:</strong> {m.college}
+                  </p>
+                  <p>
+                    <strong>Supervisor:</strong> {m.supervisor}
+                  </p>
+                  <p>
+                    <strong>Semester:</strong> {m.semester}
+                  </p>
                 </div>
               </div>
             ))}
@@ -113,5 +159,5 @@ export default function Home() {
 
       <Footer />
     </div>
-  )
+  );
 }
